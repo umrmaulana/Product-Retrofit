@@ -1,4 +1,6 @@
 package com.example.productretrofit;
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -8,19 +10,8 @@ import retrofit2.http.FormUrlEncoded;
 
 public interface RegisterAPI {
     @GET("get_product.php")
-    Call<ResponseBody> product(
-            @Field("kode") String kode,
-            @Field("merk") String merk,
-            @Field("kategori") String kategori,
-            @Field("satuan") String satuan,
-            @Field("hargabeli") String hargabeli,
-            @Field("diskonbeli") String diskonbeli,
-            @Field("hargapokok") String hargapokok,
-            @Field("hargajual") String hargajual,
-            @Field("stok") String stok,
-            @Field("foto") String foto,
-            @Field("deskripsi") String deskripsi
-    );
+    Call<ProductResponse> getProducts();
+
     @FormUrlEncoded
     @POST("get_login.php")
     Call<ResponseBody> login(

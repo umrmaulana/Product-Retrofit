@@ -8,11 +8,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
-public class ProductAdapter RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
+
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private List<Product> productList;
     private Context context;
+    private String formatRupiah(String harga) {
+        try {
+            double hargaDouble = Double.parseDouble(harga);
+            NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+            return formatRupiah.format(hargaDouble).replace(",00", ""); // Menghilangkan ",00" jika tidak perlu
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return "Rp. 0";
+        }
+    }
+
 
     public ProductAdapter(Context context, List<Product> productList) {
         this.context = context;
@@ -30,9 +45,16 @@ public class ProductAdapter RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productList.get(position);
         holder.textViewMerk.setText(product.getMerk());
-        holder.textViewHargaBeli.setText(product.getHargaBeli());
+        holder.textViewHargaBeli.setText(formatRupiah(product.getHargaBeli()));
         holder.textViewStok.setText(product.getStok());
-        Glide.with(context).load(product.getImageUrl()).into(holder.imageView);
+        String imageName = product.getFoto();
+        int imageResId = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
+
+        if (imageResId != 0) {
+            holder.imageViewProduct.setImageResource(imageResId);
+        } else {
+            holder.imageViewProduct.setImageResource(R.drawable.ic_launcher_foreground);
+        }
     }
 
     @Override
@@ -41,14 +63,14 @@ public class ProductAdapter RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+        ImageView imageViewProduct;
         TextView textViewMerk;
         TextView textViewHargaBeli;
         TextView textViewStok;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
+            imageViewProduct = itemView.findViewById(R.id.imageViewProduct);
             textViewMerk = itemView.findViewById(R.id.textViewMerk);
             textViewHargaBeli = itemView.findViewById(R.id.textViewHargaBeli);
             textViewStok = itemView.findViewById(R.id.textViewStok);
@@ -62,8 +84,7 @@ class Product {
     private String stok;
     private String foto;
 
-
-    public Product(String merk, String hargabeli, String stok,String foto ) {
+    public Product(String merk, String hargabeli, String stok, String foto) {
         this.merk = merk;
         this.hargabeli = hargabeli;
         this.stok = stok;
@@ -82,7 +103,18 @@ class Product {
         return stok;
     }
 
-    public String getImageUrl() {
+    public String getFoto() {
         return foto;
     }
 }
+
+class ProductResponse {
+    @SerializedName("result") // Sesuaikan dengan nama JSON
+    private List<Product> result;
+
+    public List<Product> getResult() {
+        return result;
+    }
+}
+
+
