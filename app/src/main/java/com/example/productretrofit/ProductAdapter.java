@@ -1,4 +1,5 @@
 package com.example.productretrofit;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +15,14 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder>{
     private List<Product> productList;
     private Context context;
     private String formatRupiah(String harga) {
         try {
             double hargaDouble = Double.parseDouble(harga);
             NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-            return formatRupiah.format(hargaDouble).replace(",00", ""); // Menghilangkan ",00" jika tidak perlu
+            return formatRupiah.format(hargaDouble).replace(",00", "");
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return "Rp. 0";
@@ -47,14 +48,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.textViewMerk.setText(product.getMerk());
         holder.textViewHargaBeli.setText(formatRupiah(product.getHargaBeli()));
         holder.textViewStok.setText(product.getStok());
-        String imageName = product.getFoto();
-        int imageResId = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
-
-        if (imageResId != 0) {
-            holder.imageViewProduct.setImageResource(imageResId);
-        } else {
-            holder.imageViewProduct.setImageResource(R.drawable.ic_launcher_foreground);
-        }
+        Glide.with(context)
+                .load(product.getFoto())
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(holder.imageViewProduct);
     }
 
     @Override

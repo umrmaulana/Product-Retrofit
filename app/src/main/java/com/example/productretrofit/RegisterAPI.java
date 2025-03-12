@@ -11,11 +11,4 @@ import retrofit2.http.FormUrlEncoded;
 public interface RegisterAPI {
     @GET("get_product.php")
     Call<ProductResponse> getProducts();
-
-    @FormUrlEncoded
-    @POST("get_login.php")
-    Call<ResponseBody> login(
-            @Field("username") String username,
-            @Field("password") String password
-    );
 }
